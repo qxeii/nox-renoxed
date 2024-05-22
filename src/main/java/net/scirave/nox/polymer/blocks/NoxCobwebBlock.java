@@ -39,8 +39,8 @@ public class NoxCobwebBlock extends BlockWithEntity implements PolymerBlock {
     }
 
     @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.COBWEB;
+    public BlockState getPolymerBlockState(BlockState state) {
+        return Blocks.COBWEB.getDefaultState();
     }
 
     @Override

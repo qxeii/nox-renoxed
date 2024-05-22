@@ -11,6 +11,7 @@
 
 package net.scirave.nox.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -57,8 +58,8 @@ public abstract class SlimeEntityMixin extends MobEntityMixin {
         }
     }
 
-    @Inject(method = "initialize", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/entity/EntityData;"))
-    public void nox$betterSlimeSpawn(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt, CallbackInfoReturnable<EntityData> cir) {
+    @Inject(method = "initialize", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;)Lnet/minecraft/entity/EntityData;"))
+    public void nox$betterSlimeSpawn(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, CallbackInfoReturnable<EntityData> cir) {
         int size = 3;
         float random = this.getRandom().nextFloat() * 10 + difficulty.getClampedLocalDifficulty();
 
@@ -81,10 +82,10 @@ public abstract class SlimeEntityMixin extends MobEntityMixin {
             cir.setReturnValue(4);
     }
 
-    @Inject(method = "remove", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/SlimeEntity;setSize(IZ)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void nox$slimeReapplyAttributes(Entity.RemovalReason reason, CallbackInfo ci, int i, Text text, boolean bl, float f, int j, int k, int l, float g, float h, SlimeEntity slimeEntity) {
+    @Inject(method = "remove", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/SlimeEntity;setSize(IZ)V"))
+    public void nox$slimeReapplyAttributes(Entity.RemovalReason reason, CallbackInfo ci, @Local(ordinal = 1) SlimeEntity slimeEntity) {
         if (this.getWorld() instanceof ServerWorld serverWorld) {
-            slimeEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(this.getBlockPos()), SpawnReason.REINFORCEMENT, null, null);
+            slimeEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(this.getBlockPos()), SpawnReason.REINFORCEMENT, null);
         }
     }
 
@@ -99,24 +100,24 @@ public abstract class SlimeEntityMixin extends MobEntityMixin {
         if (NoxConfig.slimeBaseHealthMultiplier > 1) {
             attr = this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
             if (attr != null) {
-                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", NoxConfig.slimeBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", NoxConfig.slimeBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                 this.setHealth(this.getMaxHealth());
             }
         }
         if (NoxConfig.slimeFollowRangeMultiplier > 1) {
             attr = this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE);
             if (attr != null)
-                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", NoxConfig.slimeFollowRangeMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", NoxConfig.slimeFollowRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
         if (NoxConfig.slimeMoveSpeedMultiplier > 1) {
             attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             if (attr != null)
-                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", NoxConfig.slimeMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", NoxConfig.slimeMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
 
         attr = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
         if (attr != null)
-            attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", 0, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Slime bonus", 0, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
     }
 
     @Override

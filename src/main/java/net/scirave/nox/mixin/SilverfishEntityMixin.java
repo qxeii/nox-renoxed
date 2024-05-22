@@ -38,7 +38,7 @@ public abstract class SilverfishEntityMixin extends HostileEntityMixin implement
         if (NoxConfig.silverfishMoveSpeedMultiplier > 1) {
             EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             if (attr != null)
-                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Silverfish bonus", NoxConfig.silverfishMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Silverfish bonus", NoxConfig.silverfishMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

@@ -46,7 +46,7 @@ public abstract class GhastEntityMixin extends MobEntityMixin {
         if (NoxConfig.ghastBaseHealthMultiplier > 1) {
             EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
             if (attr != null) {
-                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Ghast bonus", NoxConfig.ghastBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Ghast bonus", NoxConfig.ghastBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                 this.setHealth(this.getMaxHealth());
             }
         }

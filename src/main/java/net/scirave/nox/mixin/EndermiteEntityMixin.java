@@ -36,7 +36,7 @@ public abstract class EndermiteEntityMixin extends HostileEntityMixin {
         if(NoxConfig.endermiteMoveSpeedMultiplier > 1) {
             EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             if (attr != null)
-                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Endermite bonus", NoxConfig.endermiteMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                attr.addTemporaryModifier(new EntityAttributeModifier("Nox: Endermite bonus", NoxConfig.endermiteMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

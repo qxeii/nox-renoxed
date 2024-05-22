@@ -43,7 +43,12 @@ class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
         ;
 
         this.getOrCreateTagBuilder(NoxUtil.TOOLS)
-                .addOptionalTag(ItemTags.TOOLS);
+                .addOptionalTag(ItemTags.SWORDS)
+                .addOptionalTag(ItemTags.AXES)
+                .addOptionalTag(ItemTags.PICKAXES)
+                .addOptionalTag(ItemTags.SWORDS)
+                .addOptionalTag(ItemTags.HOES)
+        ;
 
         var armor = this.getOrCreateTagBuilder(NoxUtil.ARMOR);
         Registries.ITEM.stream().filter((item) -> item instanceof ArmorItem).forEach(armor::add);

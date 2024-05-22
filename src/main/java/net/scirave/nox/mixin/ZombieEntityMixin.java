@@ -38,10 +38,10 @@ public abstract class ZombieEntityMixin extends HostileEntityMixin implements No
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if(((ZombieEntity) (Object) this).isBaby() && NoxConfig.babyZombiesGetKnockbackResistance || !((ZombieEntity) (Object) this).isBaby())
         if (NoxConfig.zombieKnockbackResistanceBonus > 0) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE).addTemporaryModifier(new EntityAttributeModifier("Nox: Zombie bonus", NoxConfig.zombieKnockbackResistanceBonus, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+            this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE).addTemporaryModifier(new EntityAttributeModifier("Nox: Zombie bonus", NoxConfig.zombieKnockbackResistanceBonus, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
         if (NoxConfig.zombieSpeedMultiplier > 1) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(new EntityAttributeModifier("Nox: Zombie bonus", NoxConfig.zombieSpeedMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(new EntityAttributeModifier("Nox: Zombie bonus", NoxConfig.zombieSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

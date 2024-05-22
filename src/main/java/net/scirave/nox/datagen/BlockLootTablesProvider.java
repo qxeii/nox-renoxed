@@ -23,9 +23,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class BlockLootTablesProvider extends FabricBlockLootTableProvider {
-    public BlockLootTablesProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, @Nullable FabricTagProvider.BlockTagProvider blockTagProvider) {
-        super(output);
+
+    protected BlockLootTablesProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(dataOutput, registryLookup);
     }
+
     @Override
     public void generate() {
         this.addDrop(Nox.NOX_COBWEB, Items.STRING);

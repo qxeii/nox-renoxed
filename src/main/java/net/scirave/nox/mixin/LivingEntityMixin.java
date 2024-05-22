@@ -20,6 +20,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -38,10 +39,6 @@ public abstract class LivingEntityMixin extends EntityMixin implements Nox$Minin
 
     @Unique
     private boolean nox$mining = false;
-
-    @Shadow
-    @Nullable
-    public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
 
     @Shadow
     public abstract Random getRandom();
@@ -68,6 +65,8 @@ public abstract class LivingEntityMixin extends EntityMixin implements Nox$Minin
     public abstract void stopUsingItem();
 
     @Shadow public abstract float getHealth();
+
+    @Shadow @Nullable public abstract EntityAttributeInstance getAttributeInstance(RegistryEntry<EntityAttribute> attribute);
 
     @Inject(method = "blockedByShield", at = @At("HEAD"), cancellable = true)
     public void nox$ghastFireballsPierce(DamageSource source, CallbackInfoReturnable<Boolean> cir) {

@@ -76,7 +76,7 @@ public abstract class WitherSkeletonEntityMixin extends AbstractSkeletonEntityMi
         if (NoxConfig.witherSkeletonKnockbackResistanceBonus > 0) {
             EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
             if (attr != null)
-                attr.addPersistentModifier(new EntityAttributeModifier("Nox: Wither Skeleton bonus", NoxConfig.witherSkeletonKnockbackResistanceBonus, EntityAttributeModifier.Operation.ADDITION));
+                attr.addPersistentModifier(new EntityAttributeModifier("Nox: Wither Skeleton bonus", NoxConfig.witherSkeletonKnockbackResistanceBonus, EntityAttributeModifier.Operation.ADD_VALUE));
         }
     }
 

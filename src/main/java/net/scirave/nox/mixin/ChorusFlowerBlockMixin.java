@@ -35,7 +35,7 @@ public class ChorusFlowerBlockMixin extends AbstractBlockMixin {
                 world.spawnEntity(endermite);
                 endermite.playSpawnEffects();
 
-                endermite.initialize(serverWorld, world.getLocalDifficulty(pos), SpawnReason.TRIGGERED, null, null);
+                endermite.initialize(serverWorld, world.getLocalDifficulty(pos), SpawnReason.TRIGGERED, null);
             }
         }
     }

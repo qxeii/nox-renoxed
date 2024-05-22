@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -76,8 +77,9 @@ public abstract class MobEntityMixin extends LivingEntityMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", shift = At.Shift.AFTER), method = "<init>")
     public void nox$hostileAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
-        if (this instanceof Monster)
-            this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier("Nox: Hostile bonus", NoxConfig.monsterRangeMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        if (this instanceof Monster && this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE) != null) {
+            this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier("Nox: Hostile bonus", NoxConfig.monsterRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        }
     }
 
     @Inject(method = "initEquipment", at = @At("TAIL"))

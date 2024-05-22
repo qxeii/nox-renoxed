@@ -36,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("UnreachableCode")
 @Mixin(WitherEntity.class)
 public abstract class WitherEntityMixin extends HostileEntityMixin {
 
@@ -107,7 +108,7 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
                     WitherSkeletonEntity skeleton = EntityType.WITHER_SKELETON.create(serverWorld);
                     if (skeleton != null) {
                         skeleton.setPos(this.getX() + this.getRandom().nextBetween(-2, 2), this.getY(), this.getZ() + this.getRandom().nextBetween(-2, 2));
-                        skeleton.initialize(serverWorld, this.getWorld().getLocalDifficulty(skeleton.getBlockPos()), SpawnReason.REINFORCEMENT, null, null);
+                        skeleton.initialize(serverWorld, this.getWorld().getLocalDifficulty(skeleton.getBlockPos()), SpawnReason.REINFORCEMENT, null);
                         serverWorld.spawnEntityAndPassengers(skeleton);
                         skeleton.setTarget(target);
                         skeleton.playSpawnEffects();
@@ -124,9 +125,9 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
 
     @Override
     public void nox$hostileAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addTemporaryModifier(new EntityAttributeModifier("Nox: Wither bonus", NoxConfig.witherBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addTemporaryModifier(new EntityAttributeModifier("Nox: Wither bonus", NoxConfig.witherBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         this.setHealth(this.getMaxHealth());
-        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier("Nox: Wither bonus", NoxConfig.witherFollowRangeMultiplier - 1, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier("Nox: Wither bonus", NoxConfig.witherFollowRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
     }
 
     @Override

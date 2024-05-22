@@ -20,7 +20,7 @@ public class DataGenInit implements DataGeneratorEntrypoint {
         var pack = fabricDataGenerator.createPack();
 
         var blockTags = pack.addProvider(BlockTagsProvider::new);
-        pack.addProvider((a, b) -> new BlockLootTablesProvider(a, b, blockTags));
+        pack.addProvider(BlockLootTablesProvider::new);
         pack.addProvider((a, b) -> new ItemTagsProvider(a, b, blockTags));
     }
 }

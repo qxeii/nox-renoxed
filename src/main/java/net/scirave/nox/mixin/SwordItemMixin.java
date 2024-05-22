@@ -11,27 +11,23 @@
 
 package net.scirave.nox.mixin;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.item.SwordItem;
-import net.minecraft.registry.tag.BlockTags;
 import net.scirave.nox.Nox;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(SwordItem.class)
 public class SwordItemMixin {
 
-    @Inject(method = "isSuitableFor", at = @At(value = "HEAD"), cancellable = true)
-    public void nox$isSuitableFor(BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        if(state.isOf(Nox.NOX_COBWEB)) cir.setReturnValue(true);
-    }
-
-    @Inject(method = "getMiningSpeedMultiplier", at = @At(value = "HEAD"), cancellable = true)
-    public void nox$getSwordMiningSpeedMultiplier(ItemStack stack, BlockState state, CallbackInfoReturnable<Float> cir) {
-        if(state.isOf(Nox.NOX_COBWEB)) cir.setReturnValue(15F);
+    @ModifyArg(method = "createToolComponent", at = @At(value = "INVOKE", target = "Lnet/minecraft/component/type/ToolComponent;<init>(Ljava/util/List;FI)V"))
+    private static List<ToolComponent.Rule> nox$createToolComponent(List<ToolComponent.Rule> rules) {
+        var list = new ArrayList<>(rules);
+        list.add(ToolComponent.Rule.ofAlwaysDropping(List.of(Nox.NOX_COBWEB), 15));
+        return list;
     }
 }

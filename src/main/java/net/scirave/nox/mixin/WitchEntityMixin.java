@@ -21,6 +21,7 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
@@ -63,8 +64,8 @@ public abstract class WitchEntityMixin extends HostileEntityMixin {
         args.set(2, MathHelper.ceil((int) args.get(2) * 0.75));
     }
 
-    @ModifyArg(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/PotionUtil;setPotion(Lnet/minecraft/item/ItemStack;Lnet/minecraft/potion/Potion;)Lnet/minecraft/item/ItemStack;"))
-    public Potion nox$witchUpgradedPotions(Potion original) {
+    @ModifyArg(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/component/type/PotionContentsComponent;createStack(Lnet/minecraft/item/Item;Lnet/minecraft/registry/entry/RegistryEntry;)Lnet/minecraft/item/ItemStack;"))
+    public RegistryEntry<Potion> nox$witchUpgradedPotions(RegistryEntry<Potion> original) {
         if (NoxConfig.witchesDrinkBetterPotions) {
             if (Potions.WATER_BREATHING.equals(original)) {
                 return Potions.LONG_WATER_BREATHING;
@@ -84,15 +85,15 @@ public abstract class WitchEntityMixin extends HostileEntityMixin {
         // No slowdown!
     }
 
-    @ModifyArg(method = "shootAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/PotionUtil;setPotion(Lnet/minecraft/item/ItemStack;Lnet/minecraft/potion/Potion;)Lnet/minecraft/item/ItemStack;"))
-    public ItemStack nox$witchLingeringPotions(ItemStack original) {
+    @ModifyArg(method = "shootAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/component/type/PotionContentsComponent;createStack(Lnet/minecraft/item/Item;Lnet/minecraft/registry/entry/RegistryEntry;)Lnet/minecraft/item/ItemStack;"))
+    public Item nox$witchLingeringPotions(Item original) {
         if (NoxConfig.witchesUseLingeringPotions)
-            return new ItemStack(Items.LINGERING_POTION);
+            return Items.LINGERING_POTION;
         return original;
     }
 
-    @ModifyArg(method = "shootAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/PotionUtil;setPotion(Lnet/minecraft/item/ItemStack;Lnet/minecraft/potion/Potion;)Lnet/minecraft/item/ItemStack;"))
-    public Potion nox$witchUpgradedSlowness(Potion original) {
+    @ModifyArg(method = "shootAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/component/type/PotionContentsComponent;createStack(Lnet/minecraft/item/Item;Lnet/minecraft/registry/entry/RegistryEntry;)Lnet/minecraft/item/ItemStack;"))
+    public RegistryEntry<Potion> nox$witchUpgradedSlowness(RegistryEntry<Potion> original) {
         if (NoxConfig.witchesUseStrongerSlowness && Potions.SLOWNESS.equals(original)) {
             return Potions.STRONG_SLOWNESS;
         }
