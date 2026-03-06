@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.scirave.nox.Nox;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class NoxCobwebBlock extends BlockWithEntity implements PolymerBlock {
     public static final MapCodec<NoxCobwebBlock> CODEC = createCodec(NoxCobwebBlock::new);
@@ -39,7 +40,7 @@ public class NoxCobwebBlock extends BlockWithEntity implements PolymerBlock {
     }
 
     @Override
-    public BlockState getPolymerBlockState(BlockState state) {
+    public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
         return Blocks.COBWEB.getDefaultState();
     }
 
@@ -50,6 +51,6 @@ public class NoxCobwebBlock extends BlockWithEntity implements PolymerBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, Nox.NOX_COBWEB_BLOCK_ENTITY, world.isClient ? null : NoxCobwebBlockEntity::tick);
+        return validateTicker(type, Nox.NOX_COBWEB_BLOCK_ENTITY, world.isClient() ? null : NoxCobwebBlockEntity::tick);
     }
 }

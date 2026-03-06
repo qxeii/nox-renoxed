@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -48,15 +48,11 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoal {
     @Shadow
     protected abstract void findClosestTarget();
 
-    @Inject(method = "<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;IZZLjava/util/function/Predicate;)V", at = @At("TAIL"))
-    public void nox$seeThroughWalls(MobEntity mob, Class targetClass, int reciprocalChance, boolean checkVisibility, boolean checkCanNavigate, Predicate targetPredicate, CallbackInfo ci) {
-        if (NoxConfig.mobXray && (mob instanceof Monster || mob instanceof Angerable || mob instanceof GolemEntity)) {
-            this.targetPredicate.ignoreVisibility();
-        }
-    }
-
     @Inject(method = "canStart", at = @At("HEAD"), cancellable = true)
     public void nox$noRandomTarget(CallbackInfoReturnable<Boolean> cir) {
+        if (NoxConfig.mobXray && (this.mob instanceof Monster || this.mob instanceof Angerable || this.mob instanceof GolemEntity)) {
+            this.targetPredicate.ignoreVisibility();
+        }
         this.findClosestTarget();
         if (this.mob instanceof GuardianEntity && NoxConfig.guardianConstantBeam) {
             return;

@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.ChargingPlayerPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
@@ -63,10 +64,11 @@ public abstract class ChargingPlayerPhaseMixin extends AbstractPhase {
 
     @Inject(method = "serverTick", at = @At(value = "HEAD"))
     public void nox$enderDragonBetterCharging(CallbackInfo ci) {
-        PlayerEntity player = this.dragon.getWorld().getClosestPlayer(RANGE_PREDICATE, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
-        if (player != null) {
-            this.setPathTarget(player.getPos());
-
+        if (this.dragon.getEntityWorld() instanceof ServerWorld serverWorld) {
+            PlayerEntity player = serverWorld.getClosestPlayer(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), 128.0, candidate -> candidate instanceof PlayerEntity candidatePlayer && RANGE_PREDICATE.test(serverWorld, this.dragon, candidatePlayer));
+            if (player != null) {
+            this.setPathTarget(player.getEntityPos());
+            }
         }
     }
 

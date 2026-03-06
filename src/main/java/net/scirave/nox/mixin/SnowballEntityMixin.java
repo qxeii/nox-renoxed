@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(SnowballEntity.class)
 public abstract class SnowballEntityMixin extends ProjectileEntityMixin {
 
-    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;serverDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"))
     public float nox$snowGolemSnowballDamage(float original) {
         if (this.getOwner() instanceof SnowGolemEntity) {
             return original + NoxConfig.snowGolemDamage;

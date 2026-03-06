@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.SilverfishEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.scirave.nox.config.NoxConfig;
@@ -37,7 +38,7 @@ public abstract class SilverfishEntityMixin extends HostileEntityMixin implement
     @Override
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if (NoxConfig.silverfishMoveSpeedMultiplier > 1) {
-            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
             if (attr != null)
                 attr.addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:silverfish_bonus"), NoxConfig.silverfishMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
@@ -56,8 +57,8 @@ public abstract class SilverfishEntityMixin extends HostileEntityMixin implement
     }
 
     @Override
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        super.nox$shouldTakeDamage(source, amount, cir);
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        super.nox$shouldTakeDamage(world, source, amount, cir);
         if (source.getName().equals("fall"))
             cir.setReturnValue(NoxConfig.silverfishImmuneToFallDamage);
         else if (source.getName().equals("drown"))

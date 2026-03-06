@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,8 +27,8 @@ public abstract class CaveSpiderEntityMixin extends SpiderEntityMixin {
     public void nox$onSuccessfulAttack(LivingEntity target) {
         if (NoxConfig.caveSpiderAttacksPlaceWebs) {
             BlockPos pos = target.getBlockPos();
-            if (this.getWorld().getBlockState(pos).isReplaceable())
-                this.getWorld().setBlockState(pos, Nox.NOX_COBWEB.getDefaultState());
+            if (this.getEntityWorld().getBlockState(pos).isReplaceable())
+                this.getEntityWorld().setBlockState(pos, Nox.NOX_COBWEB.getDefaultState());
         }
         if (NoxConfig.caveSpidersApplySlowness)
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, NoxConfig.caveSpiderSlownessBiteDuration, NoxConfig.caveSpiderSlownessBiteLevel - 1), (CaveSpiderEntity) (Object) this);

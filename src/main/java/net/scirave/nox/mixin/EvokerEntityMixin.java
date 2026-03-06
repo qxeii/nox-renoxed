@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.scirave.nox.config.NoxConfig;
@@ -34,18 +35,18 @@ public abstract class EvokerEntityMixin extends HostileEntityMixin {
     @Override
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if (NoxConfig.evokerBaseHealthMultiplier > 1) {
-            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.MAX_HEALTH);
             if (attr != null) {
-                this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:evoker_bonus"), NoxConfig.evokerBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+                this.getAttributeInstance(EntityAttributes.MAX_HEALTH).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:evoker_bonus"), NoxConfig.evokerBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                 this.setHealth(this.getMaxHealth());
             }
         }
     }
 
     @Override
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        super.nox$shouldTakeDamage(source, amount, cir);
-        if (source.equals(this.getWorld().getDamageSources().magic()))
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        super.nox$shouldTakeDamage(world, source, amount, cir);
+        if (source.equals(this.getEntityWorld().getDamageSources().magic()))
             cir.setReturnValue(!NoxConfig.evokersImmuneToMagic);
         if (source.getTypeRegistryEntry().isIn(DamageTypeTags.IS_PROJECTILE) && !source.getTypeRegistryEntry().isIn(DamageTypeTags.BYPASSES_ARMOR))
             cir.setReturnValue(!NoxConfig.evokersResistProjectiles);

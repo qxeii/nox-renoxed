@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,7 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.rule.GameRules;
 import net.minecraft.world.World;
 import net.scirave.nox.config.NoxConfig;
 import net.scirave.nox.util.NoxUtil;
@@ -47,7 +47,7 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
     private int nox$reinforcementsCooldown = NoxConfig.witherCallReinforcementsCooldown;
 
     private void nox$witherBreakBlocks() {
-        if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || !NoxConfig.destructiveWither) return;
+        if (!(this.getEntityWorld() instanceof ServerWorld serverWorld) || !serverWorld.getGameRules().getValue(GameRules.DO_MOB_GRIEFING) || !NoxConfig.destructiveWither) return;
         Box box = this.getBoundingBox().expand(1, 0, 1);
 
         int i = MathHelper.floor(box.minX);
@@ -62,12 +62,12 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
             for (int p = j; p <= m; ++p) {
                 for (int q = k; q <= n; ++q) {
                     BlockPos blockPos = new BlockPos(o, p, q);
-                    BlockState blockState = this.getWorld().getBlockState(blockPos);
+                    BlockState blockState = this.getEntityWorld().getBlockState(blockPos);
                     if (!blockState.isAir() && !blockState.isIn(BlockTags.WITHER_IMMUNE)) {
                         if (NoxUtil.isAtWoodLevel(blockState)) {
-                            bl = this.getWorld().removeBlock(blockPos, false) || bl;
+                            bl = this.getEntityWorld().removeBlock(blockPos, false) || bl;
                         } else {
-                            bl = this.getWorld().breakBlock(blockPos, true, (WitherEntity) (Object) this) || bl;
+                            bl = this.getEntityWorld().breakBlock(blockPos, true, (WitherEntity) (Object) this) || bl;
                         }
                     }
                 }
@@ -75,7 +75,7 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
         }
 
         if (bl) {
-            this.getWorld().syncWorldEvent(null, 1022, this.getBlockPos(), 0);
+            this.getEntityWorld().syncWorldEvent(null, 1022, this.getBlockPos(), 0);
         }
 
     }
@@ -100,16 +100,16 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
     @Override
     public void nox$onTick(CallbackInfo ci) {
         LivingEntity target = this.getTarget();
-        if (this.getWorld() instanceof ServerWorld serverWorld) {
+        if (this.getEntityWorld() instanceof ServerWorld serverWorld) {
             if (nox$reinforcementsCooldown > 0) {
                 nox$reinforcementsCooldown--;
             } else if (target != null && target.squaredDistanceTo((WitherEntity) (Object) this) <= MathHelper.square(NoxConfig.witherReinforcementsTriggerRadius)) {
                 nox$reinforcementsCooldown = NoxConfig.witherCallReinforcementsCooldown;
                 for (int i = 0; i < NoxConfig.witherReinforcementsGroupSize; i++) {
-                    WitherSkeletonEntity skeleton = EntityType.WITHER_SKELETON.create(serverWorld);
+                    WitherSkeletonEntity skeleton = EntityType.WITHER_SKELETON.create(serverWorld, SpawnReason.REINFORCEMENT);
                     if (skeleton != null) {
                         skeleton.setPos(this.getX() + this.getRandom().nextBetween(-2, 2), this.getY(), this.getZ() + this.getRandom().nextBetween(-2, 2));
-                        skeleton.initialize(serverWorld, this.getWorld().getLocalDifficulty(skeleton.getBlockPos()), SpawnReason.REINFORCEMENT, null);
+                        skeleton.initialize(serverWorld, serverWorld.getLocalDifficulty(skeleton.getBlockPos()), SpawnReason.REINFORCEMENT, null);
                         serverWorld.spawnEntityAndPassengers(skeleton);
                         skeleton.setTarget(target);
                         skeleton.playSpawnEffects();
@@ -126,14 +126,14 @@ public abstract class WitherEntityMixin extends HostileEntityMixin {
 
     @Override
     public void nox$hostileAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:wither_bonus"), NoxConfig.witherBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:wither_bonus"), NoxConfig.witherBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         this.setHealth(this.getMaxHealth());
-        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:wither_bonus"), NoxConfig.witherFollowRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:wither_bonus"), NoxConfig.witherFollowRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
     }
 
     @Override
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        super.nox$shouldTakeDamage(source, amount, cir);
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        super.nox$shouldTakeDamage(world, source, amount, cir);
         if ((source.getName().equals("inWall") && !NoxConfig.withersSuffocate)) {
             cir.setReturnValue(false);
         }

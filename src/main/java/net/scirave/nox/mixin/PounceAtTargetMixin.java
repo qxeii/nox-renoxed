@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.scirave.nox.util.Nox$MiningInterface;
 import net.scirave.nox.util.Nox$PouncingEntityInterface;
@@ -50,13 +51,13 @@ public abstract class PounceAtTargetMixin extends Goal {
                 double d = this.mob.squaredDistanceTo(this.target);
                 if (!(d <= 4.0D) && !(d >= 16.0D)) {
                     if (this.mob.getY() >= (this.target.getY()) - 0.1) {
-                        if ((this.mob.getWorld().getTime() - this.nox$lastPounceUsage) >= ((Nox$PouncingEntityInterface) mob).nox$pounceCooldown()) {
-                            this.nox$lastPounceUsage = this.mob.getWorld().getTime();
+                        if ((this.mob.getEntityWorld().getTime() - this.nox$lastPounceUsage) >= ((Nox$PouncingEntityInterface) mob).nox$pounceCooldown()) {
+                            this.nox$lastPounceUsage = this.mob.getEntityWorld().getTime();
                             this.mob.getLookControl().lookAt(this.target);
                             Hand hand = this.mob.preferredHand;
                             if (hand != null) {
-                                if (d < 1.0D) {
-                                    this.mob.tryAttack(target);
+                                if (d < 1.0D && this.mob.getEntityWorld() instanceof ServerWorld serverWorld) {
+                                    this.mob.tryAttack(serverWorld, target);
                                 }
                                 this.mob.swingHand(hand);
                             }

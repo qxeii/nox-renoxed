@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,6 +25,7 @@ import net.scirave.nox.config.NoxConfig;
 import net.scirave.nox.goals.Nox$CreeperBreachGoal;
 import net.scirave.nox.util.Nox$CreeperBreachInterface;
 import net.scirave.nox.util.Nox$PouncingEntityInterface;
+import net.scirave.nox.util.NoxUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,7 +47,7 @@ public abstract class CreeperEntityMixin extends HostileEntityMixin implements N
                 4.0F, 1.5D, 1.7D, (living) -> {
             if (!NoxConfig.creepersRunFromShields) return false;
             if (living instanceof LivingEntity livingEntity) {
-                return livingEntity.isBlocking() && livingEntity.blockedByShield(this.getWorld().getDamageSources().explosion((CreeperEntity) (Object) this, (CreeperEntity) (Object) this));
+                return NoxUtil.isBlockingDamage(livingEntity, this.getEntityWorld().getDamageSources().explosion((CreeperEntity) (Object) this, (CreeperEntity) (Object) this));
             }
             return false;
         }));
@@ -58,7 +59,7 @@ public abstract class CreeperEntityMixin extends HostileEntityMixin implements N
     @Override
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if (NoxConfig.creeperSpeedMultiplier > 1) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:creeper_bonus"), NoxConfig.creeperSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:creeper_bonus"), NoxConfig.creeperSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

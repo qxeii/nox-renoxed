@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -41,10 +41,10 @@ public abstract class EntityMixin {
     public abstract Box getBoundingBox();
 
     @Shadow
-    public abstract Vec3d getPos();
+    public abstract Vec3d getEntityPos();
 
     @Shadow
-    public abstract World getWorld();
+    public abstract World getEntityWorld();
 
     @Shadow
     public abstract boolean isAlive();
@@ -65,10 +65,11 @@ public abstract class EntityMixin {
 
     @Shadow public abstract Random getRandom();
 
-    @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isAlwaysInvulnerableTo", at = @At("HEAD"), cancellable = true)
     public void nox$invulnerableCheck(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         // Overridden
     }
+
     @Inject(method = "remove", at = @At("HEAD"), cancellable = true)
     public void nox$onRemoveEntity(Entity.RemovalReason reason, CallbackInfo ci){
         //Overridden
