@@ -60,6 +60,9 @@ class BlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .addOptionalTag(BlockTags.FLOWERS)
                 .addOptionalTag(BlockTags.ALL_SIGNS)
                 .add(RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla("tinted_glass")))
+                .add(RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla("crafter")))
+                .add(RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla("trial_spawner")))
+                .add(RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla("vault")))
         ;
 
     }

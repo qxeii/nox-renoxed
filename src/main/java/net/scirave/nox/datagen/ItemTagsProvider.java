@@ -39,6 +39,8 @@ class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
                 .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("ghast_tear")))
                 .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("blaze_rod")))
                 .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("blaze_powder")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("breeze_rod")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("heavy_core")))
         ;
 
         this.builder(NoxUtil.TOOLS)
@@ -47,6 +49,7 @@ class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
                 .addOptionalTag(ItemTags.PICKAXES)
                 .addOptionalTag(ItemTags.SWORDS)
                 .addOptionalTag(ItemTags.HOES)
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("mace")))
         ;
 
         this.builder(NoxUtil.ARMOR)

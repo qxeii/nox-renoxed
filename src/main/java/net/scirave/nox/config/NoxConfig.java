@@ -145,6 +145,10 @@ public class NoxConfig extends MidnightConfig {
     public static int magmaCubeContactFireDuration = 4;
     @Entry
     public static int straySlownessLevel = 2;
+    @Entry
+    public static int boggedPoisonDuration = 160;
+    @Entry
+    public static int boggedPoisonLevel = 1;
 
     // Auras
     @Comment(centered = true)
@@ -213,6 +217,18 @@ public class NoxConfig extends MidnightConfig {
     public static boolean endermanAppliesBlindnessOnHit = true;
     @Entry
     public static boolean endermanTeleportsFromMeleeHit = true;
+
+    // Breeze
+    @Comment(centered = true)
+    public static Comment comment_breeze;
+    @Entry
+    public static double breezeBaseHealthMultiplier = 1.35;
+    @Entry
+    public static double breezeFollowRangeMultiplier = 1.35;
+    @Entry
+    public static float windChargeDamage = 2.0F;
+    @Entry
+    public static float windChargePowerMultiplier = 1.25F;
 
     // Endermites
     @Comment(centered = true)
