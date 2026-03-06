@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,13 +14,12 @@ package net.scirave.nox.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.Identifier;
 import net.scirave.nox.util.NoxUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,24 +32,30 @@ class ItemTagsProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup arg) {
-        this.getOrCreateTagBuilder(NoxUtil.FIREPROOF)
-                .add(Items.MAGMA_CREAM)
-                .add(Items.WITHER_SKELETON_SKULL)
-                .add(Items.NETHER_STAR)
-                .add(Items.GHAST_TEAR)
-                .add(Items.BLAZE_ROD)
-                .add(Items.BLAZE_POWDER)
+        this.builder(NoxUtil.FIREPROOF)
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("magma_cream")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("wither_skeleton_skull")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("nether_star")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("ghast_tear")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("blaze_rod")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("blaze_powder")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("breeze_rod")))
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("heavy_core")))
         ;
 
-        this.getOrCreateTagBuilder(NoxUtil.TOOLS)
+        this.builder(NoxUtil.TOOLS)
                 .addOptionalTag(ItemTags.SWORDS)
                 .addOptionalTag(ItemTags.AXES)
                 .addOptionalTag(ItemTags.PICKAXES)
                 .addOptionalTag(ItemTags.SWORDS)
                 .addOptionalTag(ItemTags.HOES)
+                .add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("mace")))
         ;
 
-        var armor = this.getOrCreateTagBuilder(NoxUtil.ARMOR);
-        Registries.ITEM.stream().filter((item) -> item instanceof ArmorItem).forEach(armor::add);
+        this.builder(NoxUtil.ARMOR)
+                .addOptionalTag(ItemTags.HEAD_ARMOR)
+                .addOptionalTag(ItemTags.CHEST_ARMOR)
+                .addOptionalTag(ItemTags.LEG_ARMOR)
+                .addOptionalTag(ItemTags.FOOT_ARMOR);
     }
 }

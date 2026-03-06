@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,18 +13,14 @@ package net.scirave.nox.mixin;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -63,19 +59,9 @@ public abstract class WitherSkeletonEntityMixin extends AbstractSkeletonEntityMi
     }
 
     @Override
-    public void nox$onTick(CallbackInfo ci) {
-        if (NoxConfig.witherSkeletonsWitherAuraRadius > 0) {
-            LivingEntity target = this.getTarget();
-            if (target != null && !target.hasStatusEffect(StatusEffects.WITHER) && target.squaredDistanceTo((WitherSkeletonEntity) (Object) this) <= MathHelper.square(NoxConfig.witherSkeletonsWitherAuraRadius)) {
-                target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, NoxConfig.witherSkeletonsWitherAuraDuration), (WitherSkeletonEntity) (Object) this);
-            }
-        }
-    }
-
-    @Override
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if (NoxConfig.witherSkeletonKnockbackResistanceBonus > 0) {
-            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE);
             if (attr != null)
                 attr.addPersistentModifier(new EntityAttributeModifier(Identifier.of("nox:wither_skeleton_bonus"), NoxConfig.witherSkeletonKnockbackResistanceBonus, EntityAttributeModifier.Operation.ADD_VALUE));
         }

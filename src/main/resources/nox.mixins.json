@@ -64,7 +64,6 @@
     "StrafePlayerPhaseMixin",
     "StrayEntityMixin",
     "SwimGoalMixin",
-    "SwordItemMixin",
     "TheNetherBiomeCreatorMixin",
     "VindicatorEntityMixin",
     "WitchEntityMixin",

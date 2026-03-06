@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
+import net.scirave.nox.util.NoxUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,14 +46,14 @@ public class BowAttackGoalMixin {
         LivingEntity target = this.actor.getTarget();
         if (target == null) return;
 
-        DamageSource fakeSource = actor.getWorld().getDamageSources().mobProjectile(actor, actor);
+        DamageSource fakeSource = actor.getEntityWorld().getDamageSources().mobProjectile(actor, actor);
 
         if (windup > -1) {
             if (windup > 0) {
                 ci.cancel();
             }
             windup--;
-        } else if (target.isBlocking() && target.blockedByShield(fakeSource)) {
+        } else if (NoxUtil.isBlockingDamage(target, fakeSource)) {
             heldShield = true;
             ci.cancel();
         } else if (heldShield) {

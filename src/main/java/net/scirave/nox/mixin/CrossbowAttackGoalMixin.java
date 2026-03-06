@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
+import net.scirave.nox.util.NoxUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -59,14 +60,14 @@ public class CrossbowAttackGoalMixin {
         if (hand != null && EnchantmentHelper.hasAnyEnchantmentsWith(this.actor.getStackInHand(hand), EnchantmentEffectComponentTypes.PROJECTILE_PIERCING))
             return;
 
-        DamageSource fakeSource = actor.getWorld().getDamageSources().mobProjectile(actor, actor);
+        DamageSource fakeSource = actor.getEntityWorld().getDamageSources().mobProjectile(actor, actor);
 
         if (windup > -1) {
             if (windup > 0) {
                 ci.cancel();
             }
             windup--;
-        } else if (target.isBlocking() && target.blockedByShield(fakeSource)) {
+        } else if (NoxUtil.isBlockingDamage(target, fakeSource)) {
             heldShield = true;
             ci.cancel();
         } else if (heldShield) {

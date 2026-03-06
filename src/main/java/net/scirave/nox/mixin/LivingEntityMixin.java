@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,13 +17,17 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.PhantomEntity;
+import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.scirave.nox.config.NoxConfig;
 import net.scirave.nox.util.Nox$MiningInterface;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,13 +68,13 @@ public abstract class LivingEntityMixin extends EntityMixin implements Nox$Minin
 
     @Shadow @Nullable public abstract EntityAttributeInstance getAttributeInstance(RegistryEntry<EntityAttribute> attribute);
 
-    @Inject(method = "blockedByShield", at = @At("HEAD"), cancellable = true)
-    public void nox$ghastFireballsPierce(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "getDamageBlockedAmount", at = @At("HEAD"), cancellable = true)
+    public void nox$ghastFireballsPierce(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
         if (
                 (source.getAttacker() instanceof GhastEntity) ||
                         (source.getAttacker() instanceof PhantomEntity)
         ) {
-            cir.setReturnValue(false);
+            cir.setReturnValue(0.0F);
         }
     }
 
@@ -85,12 +89,12 @@ public abstract class LivingEntityMixin extends EntityMixin implements Nox$Minin
     }
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         //Overridden
     }
 
     @Inject(method = "applyDamage", at = @At("HEAD"))
-    public void nox$onDamaged(DamageSource source, float amount, CallbackInfo ci) {
+    public void nox$onDamaged(ServerWorld world, DamageSource source, float amount, CallbackInfo ci) {
         //Overridden
     }
 
@@ -102,7 +106,14 @@ public abstract class LivingEntityMixin extends EntityMixin implements Nox$Minin
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void nox$onTick(CallbackInfo ci) {
-        //Overridden
+        if ((Object) this instanceof WitherSkeletonEntity witherSkeleton && NoxConfig.witherSkeletonsWitherAuraRadius > 0) {
+            LivingEntity target = witherSkeleton.getTarget();
+            if (target != null
+                    && !target.hasStatusEffect(StatusEffects.WITHER)
+                    && target.squaredDistanceTo(witherSkeleton) <= NoxConfig.witherSkeletonsWitherAuraRadius * NoxConfig.witherSkeletonsWitherAuraRadius) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, NoxConfig.witherSkeletonsWitherAuraDuration), witherSkeleton);
+            }
+        }
     }
 
     @Override

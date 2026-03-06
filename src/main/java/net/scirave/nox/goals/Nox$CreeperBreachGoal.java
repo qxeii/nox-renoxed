@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,8 +15,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.rule.GameRules;
 import net.scirave.nox.config.NoxConfig;
 import net.scirave.nox.util.Nox$CreeperBreachInterface;
 
@@ -34,7 +35,10 @@ public class Nox$CreeperBreachGoal extends Goal{
     public boolean canStart() {
         if (((Nox$CreeperBreachInterface) creeper).nox$isAllowedToBreachWalls()) {
             LivingEntity living = this.creeper.getTarget();
-            return living != null && living.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && shouldBreach(living);
+            return living != null
+                    && living.getEntityWorld() instanceof ServerWorld serverWorld
+                    && serverWorld.getGameRules().getValue(GameRules.DO_MOB_GRIEFING)
+                    && shouldBreach(living);
         }
         return false;
     }
@@ -47,7 +51,7 @@ public class Nox$CreeperBreachGoal extends Goal{
         if (!creeper.isNavigating() && this.creeper.age > 60 && (this.creeper.isOnGround() || !this.creeper.isTouchingWater())) {
             Path path = creeper.getNavigation().findPathTo(living, 0);
             if (path == null) {
-                return withinReach(this.creeper.getPos(), living);
+                return withinReach(this.creeper.getEntityPos(), living);
             } else if (!path.reachesTarget() && path.getEnd() != null && path.getEnd().getSquaredDistance(this.creeper.getBlockPos()) <= 4) {
                 return withinReach(path.getEnd().getPos(), living);
             } else {

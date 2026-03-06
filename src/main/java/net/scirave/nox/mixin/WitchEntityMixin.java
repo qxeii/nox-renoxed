@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,6 +28,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.scirave.nox.config.NoxConfig;
 import org.spongepowered.asm.mixin.Mixin;
@@ -101,9 +102,9 @@ public abstract class WitchEntityMixin extends HostileEntityMixin {
     }
 
     @Override
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        super.nox$shouldTakeDamage(source, amount, cir);
-        if (source.equals(this.getWorld().getDamageSources().magic()))
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        super.nox$shouldTakeDamage(world, source, amount, cir);
+        if (source.equals(this.getEntityWorld().getDamageSources().magic()))
             cir.setReturnValue(NoxConfig.witchesTakeMagicDamage);
         if (source.getTypeRegistryEntry().isIn(DamageTypeTags.IS_PROJECTILE) && !source.getTypeRegistryEntry().isIn(DamageTypeTags.BYPASSES_ARMOR))
             cir.setReturnValue(!NoxConfig.witchesResistProjectiles);
@@ -114,11 +115,11 @@ public abstract class WitchEntityMixin extends HostileEntityMixin {
         return false;
     }
 
-    @ModifyArgs(method = "shootAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/thrown/PotionEntity;setVelocity(DDDFF)V"))
+    @ModifyArgs(method = "shootAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileEntity;spawnWithVelocity(Lnet/minecraft/entity/projectile/ProjectileEntity$ProjectileCreator;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;DDDFF)Lnet/minecraft/entity/projectile/ProjectileEntity;"))
     public void nox$witchBetterAim(Args args) {
-        args.set(1, (double) args.get(1) * 0.50);
-        args.set(3, (float) ((float) args.get(3) + 0.25));
-        args.set(4, (float) args.get(4) / 4);
+        args.set(5, (double) args.get(5) * 0.50);
+        args.set(7, (float) args.get(7) + 0.25F);
+        args.set(8, (float) args.get(8) / 4.0F);
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,7 +35,7 @@ public abstract class EndermiteEntityMixin extends HostileEntityMixin {
     @Override
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if(NoxConfig.endermiteMoveSpeedMultiplier > 1) {
-            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
             if (attr != null)
                 attr.addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:endermite_bonus"), NoxConfig.endermiteMoveSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
@@ -43,7 +43,7 @@ public abstract class EndermiteEntityMixin extends HostileEntityMixin {
 
     @Override
     public void nox$onSuccessfulAttack(LivingEntity target) {
-        if (NoxConfig.endermiteAttacksMakeTargetTeleport && target.getWorld() instanceof ServerWorld serverWorld) {
+        if (NoxConfig.endermiteAttacksMakeTargetTeleport && target.getEntityWorld() instanceof ServerWorld serverWorld) {
             double d = target.getX();
             double e = target.getY();
             double f = target.getZ();
@@ -67,8 +67,8 @@ public abstract class EndermiteEntityMixin extends HostileEntityMixin {
     }
 
     @Override
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        super.nox$shouldTakeDamage(source, amount, cir);
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        super.nox$shouldTakeDamage(world, source, amount, cir);
         if (source.getName().equals("fall"))
             cir.setReturnValue(!NoxConfig.endermitesImmuneToFallDamage);
         else if (source.getName().equals("inWall"))

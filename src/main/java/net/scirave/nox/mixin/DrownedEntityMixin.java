@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(DrownedEntity.class)
 public abstract class DrownedEntityMixin extends ZombieEntityMixin {
 
-    @ModifyArg(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/DrownedEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V"))
+    @ModifyArg(method = "travelInWater", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/DrownedEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V"))
     private float nox$drownedFasterSwimming(float original) {
         if (NoxConfig.drownedSwimSpeedMultiplier > 1)
             return original * NoxConfig.drownedSwimSpeedMultiplier;

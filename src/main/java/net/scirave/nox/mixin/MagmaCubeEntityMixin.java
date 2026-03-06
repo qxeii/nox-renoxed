@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -44,15 +44,15 @@ public abstract class MagmaCubeEntityMixin extends SlimeEntityMixin {
     }
 
     private void nox$attemptLavaFill(BlockPos pos) {
-        if (!this.getWorld().isClient && NoxConfig.magmaCubeLeavesLavaWhenKilled && this.getWorld().getBlockState(pos).isReplaceable()) {
-            this.getWorld().setBlockState(pos, NoxConfig.magmaCubeMakesLavaSourceBlocks ? nox$LAVA_SOURCE : nox$FLOWING_LAVA);
+        if (!this.getEntityWorld().isClient() && NoxConfig.magmaCubeLeavesLavaWhenKilled && this.getEntityWorld().getBlockState(pos).isReplaceable()) {
+            this.getEntityWorld().setBlockState(pos, NoxConfig.magmaCubeMakesLavaSourceBlocks ? nox$LAVA_SOURCE : nox$FLOWING_LAVA);
         }
     }
 
     private void nox$attemptSmallLavaFill(BlockPos pos) {
         // Used for aesthetics when magmaCubeMakesLavaSourceBlocks is false
-        if (!this.getWorld().isClient && this.getWorld().getBlockState(pos).isReplaceable())
-            this.getWorld().setBlockState(pos, nox$SMALL_LAVA);
+        if (!this.getEntityWorld().isClient() && this.getEntityWorld().getBlockState(pos).isReplaceable())
+            this.getEntityWorld().setBlockState(pos, nox$SMALL_LAVA);
     }
 
     @Override

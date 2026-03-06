@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,7 +45,7 @@ public abstract class GhastEntityMixin extends MobEntityMixin {
     @Override
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if (NoxConfig.ghastBaseHealthMultiplier > 1) {
-            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+            EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.MAX_HEALTH);
             if (attr != null) {
                 attr.addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:ghast_bonus"), NoxConfig.ghastBaseHealthMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                 this.setHealth(this.getMaxHealth());

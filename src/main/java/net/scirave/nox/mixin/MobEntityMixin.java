@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -55,7 +55,7 @@ public abstract class MobEntityMixin extends LivingEntityMixin {
     public abstract void setTarget(@Nullable LivingEntity target);
 
     @Inject(method = "tryAttack", at = @At("RETURN"))
-    public void nox$onAttack(Entity target, CallbackInfoReturnable<Boolean> cir) {
+    public void nox$onAttack(ServerWorld world, Entity target, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue() && target instanceof LivingEntity living) {
             nox$onSuccessfulAttack(living);
         }
@@ -78,21 +78,21 @@ public abstract class MobEntityMixin extends LivingEntityMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", shift = At.Shift.AFTER), method = "<init>")
     public void nox$hostileAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
-        if (this instanceof Monster && this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE) != null) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:hostile_bonus"), NoxConfig.monsterRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        if (this instanceof Monster && this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE) != null) {
+            this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:hostile_bonus"), NoxConfig.monsterRangeMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 
     @Inject(method = "initEquipment", at = @At("TAIL"))
     public void nox$difficultyScaling(Random random, LocalDifficulty localDifficulty, CallbackInfo ci) {
         if (this instanceof Monster && NoxConfig.monsterGearScales) {
-            NoxUtil.weaponRoulette((ServerWorld) this.getWorld(), (MobEntity) (Object) this, random, localDifficulty);
-            NoxUtil.armorRoulette((ServerWorld) this.getWorld(), (MobEntity) (Object) this, random, localDifficulty);
+            NoxUtil.weaponRoulette((ServerWorld) this.getEntityWorld(), (MobEntity) (Object) this, random, localDifficulty);
+            NoxUtil.armorRoulette((ServerWorld) this.getEntityWorld(), (MobEntity) (Object) this, random, localDifficulty);
         }
     }
 
     @Override
-    public void nox$onDamaged(DamageSource source, float amount, CallbackInfo ci) {
+    public void nox$onDamaged(ServerWorld world, DamageSource source, float amount, CallbackInfo ci) {
         if (this instanceof Monster && source.getAttacker() != null) {
             if (this.isUsingItem()) {
                 this.stopUsingItem();
@@ -113,7 +113,7 @@ public abstract class MobEntityMixin extends LivingEntityMixin {
     }
 
     @Override
-    public void nox$shouldTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    public void nox$shouldTakeDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (amount < this.getHealth() || (this.getHealth()/this.getMaxHealth()) > 0.25) {
             Entity attacker = source.getAttacker();
             if (attacker instanceof MobEntity mob && NoxUtil.isAnAlly(mob, (MobEntity) (Object) this)) {

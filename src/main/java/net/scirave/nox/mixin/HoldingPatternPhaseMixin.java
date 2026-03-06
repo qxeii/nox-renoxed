@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.HoldingPatternPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
@@ -43,13 +44,15 @@ public abstract class HoldingPatternPhaseMixin extends AbstractPhase {
 
     @Inject(method = "tickInRange", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I", ordinal = 0), cancellable = true)
     public void nox$enderDragonLessStalling(CallbackInfo ci) {
-        PlayerEntity player = this.dragon.getWorld().getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, this.dragon.getX(),this.dragon.getY(),this.dragon.getZ());
-        if (player != null) {
-            if (this.dragon.getRandom().nextBoolean()) {
-                this.strafePlayer(player);
-            } else {
-                this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-                this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setPathTarget(player.getPos());
+        if (this.dragon.getEntityWorld() instanceof ServerWorld serverWorld) {
+            PlayerEntity player = serverWorld.getClosestPlayer(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), 128.0, candidate -> candidate instanceof PlayerEntity candidatePlayer && PLAYERS_IN_RANGE_PREDICATE.test(serverWorld, this.dragon, candidatePlayer));
+            if (player != null) {
+                if (this.dragon.getRandom().nextBoolean()) {
+                    this.strafePlayer(player);
+                } else {
+                    this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
+                    this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setPathTarget(player.getEntityPos());
+                }
             }
         }
         ci.cancel();

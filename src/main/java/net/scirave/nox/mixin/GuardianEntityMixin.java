@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.scirave.nox.config.NoxConfig;
@@ -28,19 +29,19 @@ public abstract class GuardianEntityMixin extends HostileEntityMixin {
     private static final BlockState nox$SMALL_WATER = nox$WATER.with(Properties.LEVEL_15, 7);
 
     @Override
-    public void nox$onDamaged(DamageSource source, float amount, CallbackInfo ci) {
-    if (NoxConfig.guardiansPlaceWaterOnDeath && !this.getWorld().isClient) {
+    public void nox$onDamaged(ServerWorld world, DamageSource source, float amount, CallbackInfo ci) {
+    if (NoxConfig.guardiansPlaceWaterOnDeath && !this.getEntityWorld().isClient()) {
             BlockPos pos = this.getBlockPos();
-            BlockState state = this.getWorld().getBlockState(pos);
+            BlockState state = this.getEntityWorld().getBlockState(pos);
             if (state != nox$WATER && state.isReplaceable()) {
                 if (NoxConfig.guardianDeathLeavesWaterSource)
-                    this.getWorld().setBlockState(pos, nox$WATER);
+                    this.getEntityWorld().setBlockState(pos, nox$WATER);
                 else {
                     // order matters
-                    state = this.getWorld().getBlockState(pos.up());
-                    this.getWorld().setBlockState(pos, nox$FLOWING_WATER);
+                    state = this.getEntityWorld().getBlockState(pos.up());
+                    this.getEntityWorld().setBlockState(pos, nox$FLOWING_WATER);
                     if (state != nox$WATER && state.isReplaceable())
-                        this.getWorld().setBlockState(pos.up(), nox$SMALL_WATER);
+                        this.getEntityWorld().setBlockState(pos.up(), nox$SMALL_WATER);
                 }
             }
         }

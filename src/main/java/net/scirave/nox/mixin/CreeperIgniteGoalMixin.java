@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +23,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Position;
 import net.scirave.nox.config.NoxConfig;
+import net.scirave.nox.util.NoxUtil;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,7 +62,7 @@ public abstract class CreeperIgniteGoalMixin extends Goal {
             this.creeper.setFuseSpeed(-1);
         } else if (d > 16.0D) {
             this.creeper.setFuseSpeed(-1);
-        } else if (!NoxConfig.creepersAttackShields && this.target.isBlocking() && this.target.blockedByShield(this.creeper.getWorld().getDamageSources().explosion(this.creeper, this.creeper))) {
+        } else if (!NoxConfig.creepersAttackShields && NoxUtil.isBlockingDamage(this.target, this.creeper.getEntityWorld().getDamageSources().explosion(this.creeper, this.creeper))) {
             this.creeper.setFuseSpeed(-1);
         } else {
             this.creeper.setFuseSpeed(1);
@@ -71,7 +72,7 @@ public abstract class CreeperIgniteGoalMixin extends Goal {
     @Inject(method = "canStart", at = @At("RETURN"), cancellable = true)
     public void nox$creeperNoTargetShield(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity victim = this.creeper.getTarget();
-        if (!NoxConfig.creepersAttackShields && cir.getReturnValue() && victim != null && victim.isBlocking() && victim.blockedByShield(this.creeper.getWorld().getDamageSources().explosion(this.creeper, this.creeper))) {
+        if (!NoxConfig.creepersAttackShields && cir.getReturnValue() && victim != null && NoxUtil.isBlockingDamage(victim, this.creeper.getEntityWorld().getDamageSources().explosion(this.creeper, this.creeper))) {
             this.creeper.setFuseSpeed(-1);
             cir.setReturnValue(false);
         }

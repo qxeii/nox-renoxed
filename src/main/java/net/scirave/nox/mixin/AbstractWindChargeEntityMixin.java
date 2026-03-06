@@ -11,22 +11,17 @@
 
 package net.scirave.nox.mixin;
 
-import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import net.minecraft.entity.projectile.AbstractWindChargeEntity;
 import net.scirave.nox.config.NoxConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Mixin(SnowballEntity.class)
-public abstract class SnowballEntityMixin extends ProjectileEntityMixin {
+@Mixin(AbstractWindChargeEntity.class)
+public abstract class AbstractWindChargeEntityMixin {
 
-    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;serverDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"))
-    public float nox$snowGolemSnowballDamage(float original) {
-        if (this.getOwner() instanceof SnowGolemEntity) {
-            return original + NoxConfig.snowGolemDamage;
-        }
-        return original;
+    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"), index = 2)
+    private float nox$strongerWindChargeDamage(float original) {
+        return NoxConfig.windChargeDamage;
     }
-
 }

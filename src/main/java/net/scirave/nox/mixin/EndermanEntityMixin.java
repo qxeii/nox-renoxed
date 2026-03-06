@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.scirave.nox.config.NoxConfig;
 import net.scirave.nox.goals.Nox$MineBlockGoal;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(EndermanEntity.class)
 public abstract class EndermanEntityMixin extends HostileEntityMixin {
@@ -51,15 +51,8 @@ public abstract class EndermanEntityMixin extends HostileEntityMixin {
         }
     }
 
-    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/EndermanEntity;teleportRandomly()Z", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
-    public void nox$endermanLessRandomTeleport(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir, boolean entity) {
-        if (source.equals(source.getType().equals(DamageTypes.ON_FIRE) || source.getType().equals(DamageTypes.MAGIC))){
-            cir.setReturnValue(entity);
-        }
-    }
-
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSource;getAttacker()Lnet/minecraft/entity/Entity;"))
-    public void nox$endermanTeleportOnDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    public void nox$endermanTeleportOnDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (this.isAlive() && NoxConfig.endermanTeleportsFromMeleeHit && source.getAttacker() instanceof LivingEntity && !source.getType().equals(DamageTypes.ON_FIRE) && !source.getType().equals(DamageTypes.MAGIC)) {
             for (int i = 0; i < 64; ++i) {
                 if (this.teleportRandomly()) {

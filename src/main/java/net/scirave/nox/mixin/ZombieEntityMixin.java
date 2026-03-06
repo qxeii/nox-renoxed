@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -39,10 +39,10 @@ public abstract class ZombieEntityMixin extends HostileEntityMixin implements No
     public void nox$modifyAttributes(EntityType<?> entityType, World world, CallbackInfo ci) {
         if(((ZombieEntity) (Object) this).isBaby() && NoxConfig.babyZombiesGetKnockbackResistance || !((ZombieEntity) (Object) this).isBaby())
         if (NoxConfig.zombieKnockbackResistanceBonus > 0) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:zombie_bonus"), NoxConfig.zombieKnockbackResistanceBonus, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:zombie_bonus"), NoxConfig.zombieKnockbackResistanceBonus, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
         if (NoxConfig.zombieSpeedMultiplier > 1) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:zombie_bonus"), NoxConfig.zombieSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addTemporaryModifier(new EntityAttributeModifier(Identifier.of("nox:zombie_bonus"), NoxConfig.zombieSpeedMultiplier - 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

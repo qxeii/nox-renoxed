@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,8 @@
 package net.scirave.nox.util;
 
 import com.google.common.collect.Multimap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.DamageUtil;
@@ -28,7 +30,6 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -48,7 +49,7 @@ import net.scirave.nox.Nox;
 import net.scirave.nox.config.NoxConfig;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 
 public class NoxUtil {
@@ -86,21 +87,23 @@ public class NoxUtil {
         double o = target.getBodyY(0.5D) - l;
         double p = target.getZ() - m;
         if (!dragon.isSilent()) {
-            dragon.getWorld().syncWorldEvent(null, 1017, dragon.getBlockPos(), 0);
+            dragon.getEntityWorld().syncWorldEvent(null, 1017, dragon.getBlockPos(), 0);
         }
 
-        DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(dragon.getWorld(), dragon, new Vec3d(n, o, p));
+        DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(dragon.getEntityWorld(), dragon, new Vec3d(n, o, p));
         dragonFireballEntity.refreshPositionAndAngles(k, l, m, 0.0F, 0.0F);
         dragonFireballEntity.accelerationPower *= 5;
-        dragon.getWorld().spawnEntity(dragonFireballEntity);
+        dragon.getEntityWorld().spawnEntity(dragonFireballEntity);
     }
 
     public static Item randomWeapon(Random random) {
-        return Registries.ITEM.getOrCreateEntryList(TOOLS).getRandom(random).map(RegistryEntry::value).orElse(Items.AIR);
+        var items = Registries.ITEM.stream().filter(item -> item.getRegistryEntry().isIn(TOOLS)).toList();
+        return items.isEmpty() ? Items.AIR : items.get(random.nextInt(items.size()));
     }
 
     public static Item randomArmor(Random random) {
-        return Registries.ITEM.getOrCreateEntryList(ARMOR).getRandom(random).map(RegistryEntry::value).orElse(Items.AIR);
+        var items = Registries.ITEM.stream().filter(item -> item.getRegistryEntry().isIn(ARMOR)).toList();
+        return items.isEmpty() ? Items.AIR : items.get(random.nextInt(items.size()));
     }
 
     public static double getLeewayAmount(LivingEntity armorWearer, double damage, double total, int armor, double toughness, double modifier, DamageSource source) {
@@ -123,45 +126,41 @@ public class NoxUtil {
             base = (double) 0;
         }
 
-        var map = item.getAttributeModifiers();
-        double multiple = 0;
-        double multiply = 1;
-        double add = 0;
+        ItemStack stack = item.getDefaultStack();
+        final double[] multiple = {0};
+        final double[] multiply = {1};
+        final double[] add = {0};
 
-        for (var entry : map.modifiers()) {
-            var attribute = entry.attribute();
-            var modifier = entry.modifier();
-
-            if (attribute == type && entry.slot().matches(slot)) {
+        stack.applyAttributeModifiers(slot, (attribute, modifier) -> {
+            if (attribute == type) {
                 switch (modifier.operation()) {
-                    case ADD_MULTIPLIED_BASE -> multiple += modifier.value();
-                    case ADD_VALUE -> add += modifier.value();
-                    case ADD_MULTIPLIED_TOTAL -> multiply *= 1 + modifier.value();
+                    case ADD_MULTIPLIED_BASE -> multiple[0] += modifier.value();
+                    case ADD_VALUE -> add[0] += modifier.value();
+                    case ADD_MULTIPLIED_TOTAL -> multiply[0] *= 1 + modifier.value();
                 }
-
             }
-        }
+        });
 
-        return (base + add + (base + add) * multiple) * (multiply);
+        return (base + add[0] + (base + add[0]) * multiple[0]) * multiply[0];
     }
 
     public static double getItemDamage(Item item, EquipmentSlot slot, double baseDamage) {
-        return getItemQuality(item, slot, EntityAttributes.GENERIC_ATTACK_DAMAGE, baseDamage);
+        return getItemQuality(item, slot, EntityAttributes.ATTACK_DAMAGE, baseDamage);
     }
 
     public static Pair<Integer, Float> getItemProtection(Item item, EquipmentSlot slot, double baseDamage) {
-        int armor = (int) Math.floor(getItemQuality(item, slot, EntityAttributes.GENERIC_ARMOR, (double) 0));
-        float toughness = (float) getItemQuality(item, slot, EntityAttributes.GENERIC_ARMOR_TOUGHNESS, (double) 0);
+        int armor = (int) Math.floor(getItemQuality(item, slot, EntityAttributes.ARMOR, (double) 0));
+        float toughness = (float) getItemQuality(item, slot, EntityAttributes.ARMOR_TOUGHNESS, (double) 0);
 
         return new Pair<>(armor, toughness);
     }
 
     public static double getItemDPS(Item item, EquipmentSlot slot, double baseDamage, double attackSpeed) {
-        return getItemQuality(item, slot, EntityAttributes.GENERIC_ATTACK_DAMAGE, baseDamage) * getItemQuality(item, slot, EntityAttributes.GENERIC_ATTACK_SPEED, attackSpeed);
+        return getItemQuality(item, slot, EntityAttributes.ATTACK_DAMAGE, baseDamage) * getItemQuality(item, slot, EntityAttributes.ATTACK_SPEED, attackSpeed);
     }
 
     public static double getBestPlayerDPS(PlayerEntity player) {
-        double defaultAttackSpeed = player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED);
+        double defaultAttackSpeed = player.getAttributeValue(EntityAttributes.ATTACK_SPEED);
         double damage = 0;
         PlayerInventory inventory = player.getInventory();
 
@@ -196,9 +195,9 @@ public class NoxUtil {
             if (noWeapon) return;
 
             int armor = player.getArmor();
-            float toughness = (float) mob.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
+            float toughness = (float) mob.getAttributeValue(EntityAttributes.ARMOR_TOUGHNESS);
 
-            double damage = mob.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+            double damage = mob.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
             double total = damage;
 
             double mod = player.getMaxHealth() / Math.max(mob.getMaxHealth(), 20);
@@ -261,7 +260,7 @@ public class NoxUtil {
             double higherLeeway = 0.50;
             higherLeeway -= higherLeeway * 0.5 * clamped;
 
-            HashSet<ArmorItem> armorItems = new HashSet<>();
+            HashMap<EquipmentSlot, Item> armorItems = new HashMap<>();
             int iterated = 0;
 
             while (freeFirstPass || !resistanceWithinLeeway(mob, damage, total, armor, toughness, lowerLeeway, higherLeeway, modifier, world.getDamageSources().generic()) && iterated < 20) {
@@ -270,38 +269,31 @@ public class NoxUtil {
                     double lastLeeway = getLeewayAmount(mob, damage, total, armor, toughness, modifier, world.getDamageSources().generic());
                     Item item = randomArmor(random);
 
-                    if (item instanceof ArmorItem armorItem) {
-                        EquipmentSlot slot = armorItem.getSlotType();
-
-                        ArmorItem toRemove = null;
-                        for (ArmorItem potential : armorItems) {
-                            if (potential.getSlotType() == slot) {
-                                toRemove = potential;
-                                break;
-                            }
-                        }
+                    EquipmentSlot slot = getArmorSlot(item);
+                    if (slot != null) {
+                        Item toRemove = armorItems.get(slot);
 
                         if (toRemove != null) {
-                            armor -= toRemove.getProtection();
-                            toughness -= toRemove.getToughness();
+                            var oldProtection = getItemProtection(toRemove, slot, 0);
+                            armor -= oldProtection.getLeft();
+                            toughness -= oldProtection.getRight();
                         }
 
-                        armor += armorItem.getProtection();
-                        toughness += armorItem.getToughness();
+                        var protection = getItemProtection(item, slot, 0);
+                        armor += protection.getLeft();
+                        toughness += protection.getRight();
 
                         double newLeeway = getLeewayAmount(mob, damage, total, armor, toughness, modifier, world.getDamageSources().generic());
                         if ((newLeeway <= 0 && (newLeeway - lastLeeway) >= 0)
                                 || resistanceWithinLeeway(mob, damage, total, armor, toughness, lowerLeeway, higherLeeway, modifier, world.getDamageSources().generic())) {
-                            if (toRemove != null) {
-                                armorItems.remove(toRemove);
-                            }
-                            armorItems.add(armorItem);
+                            armorItems.put(slot, item);
                         } else {
-                            armor -= armorItem.getProtection();
-                            toughness -= armorItem.getToughness();
+                            armor -= protection.getLeft();
+                            toughness -= protection.getRight();
                             if (toRemove != null) {
-                                armor += toRemove.getProtection();
-                                toughness += toRemove.getToughness();
+                                var oldProtection = getItemProtection(toRemove, slot, 0);
+                                armor += oldProtection.getLeft();
+                                toughness += oldProtection.getRight();
                             }
                         }
                     }
@@ -317,11 +309,30 @@ public class NoxUtil {
             }
 
             if (!armorItems.isEmpty()) {
-                for (ArmorItem item : armorItems) {
-                    mob.equipStack(item.getSlotType(), item.getDefaultStack());
+                for (var entry : armorItems.entrySet()) {
+                    mob.equipStack(entry.getKey(), entry.getValue().getDefaultStack());
                 }
             }
         }
+    }
+
+    public static @Nullable EquipmentSlot getArmorSlot(Item item) {
+        EquippableComponent equippable = item.getComponents().get(DataComponentTypes.EQUIPPABLE);
+        if (equippable == null) {
+            return null;
+        }
+
+        EquipmentSlot slot = equippable.slot();
+        return switch (slot) {
+            case HEAD, CHEST, LEGS, FEET -> slot;
+            default -> null;
+        };
+    }
+
+    public static boolean isBlockingDamage(LivingEntity entity, DamageSource source) {
+        return entity.isBlocking()
+                && entity.getEntityWorld() instanceof ServerWorld serverWorld
+                && entity.getDamageBlockedAmount(serverWorld, source, 1.0F) > 0.0F;
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,6 +16,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -52,15 +54,15 @@ public class NoxCobwebBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
-        super.readNbt(tag, lookup);
-        this.age = tag.getShort(AGE_NBT_KEY);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        this.age = (short) view.getShort(AGE_NBT_KEY, this.age);
     }
 
     @Override
-    public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
-        super.writeNbt(tag, lookup);
-        tag.putShort(AGE_NBT_KEY, this.age);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putShort(AGE_NBT_KEY, this.age);
     }
 
 }

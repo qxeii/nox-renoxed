@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6.+'
+    id 'fabric-loom' version '1.13.+'
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'maven-publish'
 }
@@ -72,8 +72,8 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-    it.options.release = 17
+    // Minecraft 1.21 upwards uses Java 21.
+    it.options.release = 21
 }
 
 java {

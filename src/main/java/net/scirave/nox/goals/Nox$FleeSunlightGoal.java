@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,7 +32,7 @@ public class Nox$FleeSunlightGoal extends Goal {
     public Nox$FleeSunlightGoal(PathAwareEntity mob, double speed) {
         this.mob = mob;
         this.speed = speed;
-        this.world = mob.getWorld();
+        this.world = mob.getEntityWorld();
         this.setControls(EnumSet.of(Goal.Control.MOVE));
     }
 

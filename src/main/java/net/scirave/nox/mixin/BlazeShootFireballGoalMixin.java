@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * Nox
- * Copyright (c) 2024 SciRave
+ * Copyright (c) 2026 SciRave
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,6 +19,7 @@ import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.scirave.nox.config.NoxConfig;
+import net.scirave.nox.util.NoxUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -63,14 +64,14 @@ public abstract class BlazeShootFireballGoalMixin {
             LivingEntity target = this.blaze.getTarget();
             if (target == null) return;
 
-            DamageSource fakeSource = this.blaze.getWorld().getDamageSources().mobProjectile(this.blaze, this.blaze);
+            DamageSource fakeSource = this.blaze.getEntityWorld().getDamageSources().mobProjectile(this.blaze, this.blaze);
 
             if (windup > -1) {
                 if (windup > 0) {
                     ci.cancel();
                 }
                 windup--;
-            } else if (target.isBlocking() && target.blockedByShield(fakeSource)) {
+            } else if (NoxUtil.isBlockingDamage(target, fakeSource)) {
                 heldShield = true;
                 ci.cancel();
             } else if (heldShield) {
